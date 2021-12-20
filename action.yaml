@@ -1,0 +1,74 @@
+name: Checkout, pipenv install and run
+description: Checkout, pipenv install and run
+
+inputs:
+  fetch-depth:
+    required: false
+    description: The number of commits to fetch
+    default: "0"
+
+  submodules:
+    required: false
+    description: Whether to fetch submodules
+    default: ""
+
+  python-version:
+    required: false
+    description: Version of Python to install
+    default: "3.7"
+
+  pipenv-install:
+    required: false
+    description: The options to pass to pipenv install
+    default: "--dev --deploy"
+
+  pipenv-run:
+    required: false
+    description: If given, run pipenv run with these arguments
+    default: ""
+
+  allow-editable-installs:
+    required: false
+    description: If false then change Pipfile references to editable to false
+    default: "true"
+
+  cache-virtualenv:
+    required: false
+    description: If false then turn of caching of the pipenv virtualenv
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: ${{ inputs.fetch-depth }}
+        submodules: ${{ inputs.submodules }}
+
+    - uses: actions/setup-python@v2
+      id: setup-python
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - if: ${{ inputs.allow-editable-installs != 'true' }}
+      shell: bash
+      run: |
+        sed -i 's/editable *= *true/editable = false/' Pipfile
+        sed -i 's/"editable": true/"editable": false/' Pipfile.lock
+
+    - uses: actions/cache@v2
+      with:
+        path: .venv
+        key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-pipenv-${{ hashFiles('Pipfile.lock', 'setup.*') }}
+
+    - shell: bash
+      run: pip install --no-cache-dir pipenv
+
+    - shell: bash
+      run: pipenv install --python ${{ inputs.python-version }} ${{ inputs.pipenv-install }} && pipenv graph
+      env:
+        PIPENV_VENV_IN_PROJECT: "1"
+
+    - if: inputs.pipenv-run
+      shell: bash
+      run: pipenv run ${{ inputs.pipenv-run }}
