@@ -32,11 +32,6 @@ inputs:
     description: If false then change Pipfile references to editable to false
     default: "true"
 
-  cache-virtualenv:
-    required: false
-    description: If false then turn of caching of the pipenv virtualenv
-    default: "true"
-
 runs:
   using: composite
   steps:
@@ -46,7 +41,6 @@ runs:
         submodules: ${{ inputs.submodules }}
 
     - uses: actions/setup-python@v2
-      id: setup-python
       with:
         python-version: ${{ inputs.python-version }}
 
@@ -56,18 +50,14 @@ runs:
         sed -i 's/editable *= *true/editable = false/' Pipfile
         sed -i 's/"editable": true/"editable": false/' Pipfile.lock
 
-    - uses: actions/cache@v2
-      with:
-        path: .venv
-        key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-pipenv-${{ hashFiles('Pipfile.lock', 'setup.*') }}
+    - shell: bash
+      run: pip install pipenv
 
     - shell: bash
-      run: pip install --no-cache-dir pipenv
+      run: pipenv install --python ${{ inputs.python-version }} ${{ inputs.pipenv-install }}
 
     - shell: bash
-      run: pipenv install --python ${{ inputs.python-version }} ${{ inputs.pipenv-install }} && pipenv graph
-      env:
-        PIPENV_VENV_IN_PROJECT: "1"
+      run: pipenv graph
 
     - if: inputs.pipenv-run
       shell: bash

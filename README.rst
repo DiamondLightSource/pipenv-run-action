@@ -65,10 +65,3 @@ Default ``true``. If ``false`` then change references to ``editable`` in
 ``Pipfile`` and ``Pipfile.lock`` to ``false``. This will make sure wheel builds
 of these directories takes place instead of editable installs which are soft
 links.
-
-cache-virtualenv
-~~~~~~~~~~~~~~~~
-
-Default ``true``. If ``false`` then turn of caching of the pipenv virtualenv.
-Caches are kept per os and version of pythons, and will be invalidated when
-``Pipfile.lock`` or ``setup.*`` changes.
