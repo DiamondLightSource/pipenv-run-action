@@ -62,6 +62,6 @@ allow-editable-installs
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Default ``true``. If ``false`` then change references to ``editable`` in
-``Pipfile`` and ``Pipfile.lock`` to ``false``. This will make sure wheel builds
-of these directories takes place instead of editable installs which are soft
-links.
+``Pipfile`` to ``false``. This is used with ``pipenv-install: --skip-lock`` to
+make sure wheel builds of these directories takes place instead of editable
+installs which are soft links.

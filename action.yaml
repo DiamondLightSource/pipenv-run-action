@@ -46,9 +46,7 @@ runs:
 
     - if: ${{ inputs.allow-editable-installs != 'true' }}
       shell: bash
-      run: |
-        sed -i 's/editable *= *true/editable = false/' Pipfile
-        sed -i 's/"editable": true/"editable": false/' Pipfile.lock
+      run: sed -i 's/editable *= *true/editable = false/' Pipfile
 
     - shell: bash
       run: pip install pipenv
