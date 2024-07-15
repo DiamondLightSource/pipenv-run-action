@@ -16,7 +16,7 @@ use it to install from the lockfile checking hashes then run pytest:
       runs-on: ubuntu-latest
       steps:
         - name: Checkout, pipenv install and run
-          uses: dls-controls/pipenv-run-action@v1
+          uses: DiamondLightSource/pipenv-run-action@v1
           with:
             python-version: "3.7"
             pipenv-install: --dev --deploy
